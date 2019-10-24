@@ -6,6 +6,9 @@
 # Change shell to Z Shell
 chsh -s /bin/zsh
 
+# Install git flow
+brew install git-flow
+
 # Install Zsh Autosuggestions
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 echo 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' >> ~/.zshrc
