@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 
 # Install Homebrew
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -37,19 +37,13 @@ pip install awscli
 # Install Kubernetes CLI
 brew install kubectl
 
-# Install Virtualbox
-brew cask install virtualbox
+# Install Hyperkit
+brew install hyperkit
 
 # Install Minikube
-brew cask install minikube
+brew install minikube
 
-# Install Atom Editor
-brew cask install atom
-
-# Install Google Chrome
-brew cask install google-chrome
-
-# Install KeePassXC
-brew cask install keepassxc
+# Install Visual Studio Code
+brew cask install visual-studio-code
 
 echo 'Done.'
