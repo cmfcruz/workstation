@@ -43,6 +43,9 @@ brew install hyperkit
 # Install Minikube
 brew install minikube
 
+# Install Docker CLI
+brew install docker
+
 # Install Visual Studio Code
 brew cask install visual-studio-code
 
