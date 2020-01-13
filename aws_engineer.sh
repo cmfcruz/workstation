@@ -49,4 +49,10 @@ brew install docker
 # Install Visual Studio Code
 brew cask install visual-studio-code
 
+# Install Google Chrome
+brew cask install google-chrome
+
+# Install KeepassXC
+brew cask install keepassxc
+
 echo 'Done.'
