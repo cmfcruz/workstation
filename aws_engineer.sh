@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Install Homebrew
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+test -f /usr/local/bin/brew || /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Change shell to Z Shell
 chsh -s /bin/zsh
@@ -11,11 +11,11 @@ brew install git-flow
 
 # Install Zsh Autosuggestions
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-echo 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' >> ~/.zshrc
+grep 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' ~/.zshrc || echo 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' >> ~/.zshrc
 
 # Install Starship
 brew install starship
-echo 'eval "$(starship init zsh)"' >> ~/.zshrc
+grep 'eval "$(starship init zsh)"' ~/.zshrc || echo 'eval "$(starship init zsh)"' >> ~/.zshrc
 eval "$(starship init zsh)"
 
 # Install Powerline Fonts
@@ -27,15 +27,25 @@ rm -rf fonts
 
 # Install Pyenv
 brew install pyenv
-echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
-echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
-echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
+grep 'export PYENV_ROOT="$HOME/.pyenv"' ~/.zshrc || echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+grep 'export PATH="$PYENV_ROOT/bin:$PATH"' ~/.zshrc || echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+grep 'eval "$(pyenv init -)"' ~/.zshrc || echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
 
 # Install AWS CLI
-pip install awscli
+pip3 install awscli
+
+# Install GPG
+brew install gnupg
+grep 'export GPG_TTY=$(tty)' ~/.zshrc || echo 'export GPG_TTY=$(tty)' >> ~/.zshrc
+
+# Install Terraform
+brew install terraform
 
 # Install Kubernetes CLI
 brew install kubectl
+
+# Install K9s CLI
+brew install derailed/k9s/k9s
 
 # Install Hyperkit
 brew install hyperkit
@@ -46,6 +56,12 @@ brew install minikube
 # Install Docker CLI
 brew install docker
 
+# Install Virtualbox
+brew cask install virtualbox
+
+# Install Vagrant
+brew cask install vagrant
+
 # Install Visual Studio Code
 brew cask install visual-studio-code
 
@@ -54,5 +70,10 @@ brew cask install google-chrome
 
 # Install KeepassXC
 brew cask install keepassxc
+
+# Update existing packages
+brew update
+brew upgrade
+brew cask upgrade
 
 echo 'Done.'
