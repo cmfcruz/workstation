@@ -30,9 +30,14 @@ brew install pyenv
 grep 'export PYENV_ROOT="$HOME/.pyenv"' ~/.zshrc || echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
 grep 'export PATH="$PYENV_ROOT/bin:$PATH"' ~/.zshrc || echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
 grep 'eval "$(pyenv init -)"' ~/.zshrc || echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
+eval "$(pyenv init -)"
+pyenv install 3.7.6
 
 # Install AWS CLI
 pip3 install awscli
+
+# Install aws-iam-authenticator for EKS
+brew install aws-iam-authenticator
 
 # Install GPG
 brew install gnupg
@@ -43,6 +48,9 @@ brew install terraform
 
 # Install Kubernetes CLI
 brew install kubectl
+
+# Install Help
+brew install helm
 
 # Install K9s CLI
 brew install derailed/k9s/k9s
