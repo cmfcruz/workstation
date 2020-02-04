@@ -52,6 +52,9 @@ brew install kubectl
 # Install Help
 brew install helm
 
+# Install Flux CLI
+brew install fluxctl
+
 # Install K9s CLI
 brew install derailed/k9s/k9s
 
