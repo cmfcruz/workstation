@@ -25,7 +25,6 @@ brew install \
 # Install packages using Homebrew casks
 brew install --cask \
     docker \
-    google-chrome \
     iterm2 \
     visual-studio-code
 
@@ -41,7 +40,6 @@ grep 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' ~/.zshrc || ech
 
 # Install Starship Config
 grep 'eval "$(starship init zsh)"' ~/.zshrc || echo 'eval "$(starship init zsh)"' >> ~/.zshrc
-eval "$(starship init zsh)"
 
 # Install Powerline Fonts
 git clone https://github.com/powerline/fonts.git --depth=1
