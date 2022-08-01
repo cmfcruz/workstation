@@ -57,8 +57,10 @@ grep 'eval "$(pyenv init -)"' ~/.zshrc || echo -e 'if command -v pyenv 1>/dev/nu
 eval "$(pyenv init -)"
 pyenv install 3.8.12
 
-# Install nvm
+# Install nvm and install Node v16
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+nvm install v16
+nvm alias default v16
 
 # Install GPG configuration
 grep 'export GPG_TTY=$(tty)' ~/.zshrc || echo 'export GPG_TTY=$(tty)' >> ~/.zshrc
