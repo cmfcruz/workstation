@@ -38,8 +38,13 @@ git config --global commit.gpgsign true
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 grep 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' ~/.zshrc || echo 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' >> ~/.zshrc
 
-# Install Starship Config
+# Install Starship Config and set a sane default timeout value for long running background commands
 grep 'eval "$(starship init zsh)"' ~/.zshrc || echo 'eval "$(starship init zsh)"' >> ~/.zshrc
+if [ ! -f ~/.config/starship.toml ]
+then
+    mkdir -p ~/.config
+    echo "command_timeout = 5000" > ~/.config/starship.toml
+fi
 
 # Install Powerline Fonts
 git clone https://github.com/powerline/fonts.git --depth=1
