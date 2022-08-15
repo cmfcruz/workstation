@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 # Install Homebrew
-test -f /usr/local/bin/brew || /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+test -f /usr/local/bin/brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Install packages using Homebrew
 brew install \
-    awscli \
     cue-lang/tap/cue \
     derailed/k9s/k9s \
     fluxcd/tap/flux \
@@ -15,7 +14,6 @@ brew install \
     kubectl \
     pyenv \
     shellcheck \
-    starship \
     terraform \
     terragrunt \
     tree \
@@ -38,17 +36,9 @@ git config --global commit.gpgsign true
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 grep 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' ~/.zshrc || echo 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' >> ~/.zshrc
 
-# Install Starship Config and set a sane default timeout value for long running background commands
-grep 'eval "$(starship init zsh)"' ~/.zshrc || echo 'eval "$(starship init zsh)"' >> ~/.zshrc
-if [ ! -f ~/.config/starship.toml ]
-then
-    mkdir -p ~/.config
-    echo "command_timeout = 5000" > ~/.config/starship.toml
-fi
-
 # Install Powerline Fonts
-git clone https://github.com/powerline/fonts.git --depth=1
-eval "$(cd fonts && ./install.sh && rm -rf fonts)"
+git clone https://github.com/powerline/fonts.git
+cd fonts && ./install.sh && cd .. && rm -rf fonts
 
 # Install Pyenv configuration and install Python 3.8.12
 grep 'export PYENV_ROOT="$HOME/.pyenv"' ~/.zshrc || echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
@@ -59,6 +49,8 @@ pyenv install 3.8.12
 
 # Install nvm and install Node v16
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+bash $NVM_DIR/nvm.sh
 nvm install v16
 nvm alias default v16
 
