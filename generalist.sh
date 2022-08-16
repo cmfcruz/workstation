@@ -41,11 +41,13 @@ git clone https://github.com/powerline/fonts.git
 cd fonts && ./install.sh && cd .. && rm -rf fonts
 
 # Install Pyenv configuration and install Python 3.8.12
+export PYTHON_VERSION=3.8.12
 grep 'export PYENV_ROOT="$HOME/.pyenv"' ~/.zshrc || echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
 grep 'export PATH="$PYENV_ROOT/bin:$PATH"' ~/.zshrc || echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
 grep 'eval "$(pyenv init -)"' ~/.zshrc || echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
 eval "$(pyenv init -)"
-pyenv install 3.8.12
+pyenv install $PYTHON_VERSION
+pyenv global $PYTHON_VERSION
 
 # Install nvm and install Node v16
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
