@@ -11,6 +11,7 @@ brew install \
     gh \
     git-secret \
     gnupg \
+    jq \
     kubectl \
     pyenv \
     shellcheck \
