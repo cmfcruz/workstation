@@ -27,6 +27,9 @@ brew install --cask \
     iterm2 \
     visual-studio-code
 
+# Install zsh if not preinstalled
+sudo apt install zsh
+
 # Change shell to Z Shell
 chsh -s /bin/zsh
 
