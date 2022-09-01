@@ -101,4 +101,7 @@ nvm alias default v16
 # Install GPG configuration
 grep 'export GPG_TTY=$(tty)' ~/.zshrc || echo 'export GPG_TTY=$(tty)' >> ~/.zshrc
 
+# Show current working directory in prompt
+grep 'export PS1="%m %~%# "' ~/.zshrc || echo 'export PS1="%m %~%# "' >> ~/.zshrc
+
 echo 'Done.'
