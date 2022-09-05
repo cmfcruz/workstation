@@ -21,9 +21,12 @@ brew install \
     cue-lang/tap/cue \
     derailed/k9s/k9s \
     fluxcd/tap/flux \
-    git-secret \
     terragrunt \
     yq
+
+# Install git-secret
+sudo sh -c "echo 'deb https://gitsecret.jfrog.io/artifactory/git-secret-deb git-secret main' >> /etc/apt/sources.list"
+wget -qO - 'https://gitsecret.jfrog.io/artifactory/api/gpg/key/public' | sudo apt-key add -
 
 # Install Pyenv
 curl https://pyenv.run | bash
@@ -58,6 +61,7 @@ sudo apt update \
     docker \
     docker.io \
     gh \
+    git-secret \
     kubectl \
     jq \
     shellcheck \
