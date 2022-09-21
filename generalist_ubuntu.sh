@@ -15,6 +15,9 @@ sudo apt-get install -y \
 
 # Install Homebrew
 test -f /usr/local/bin/brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+grep 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' || echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/cmfcruz/.zshrc
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
 
 # Install packages using Homebrew
 brew install \
@@ -60,6 +63,7 @@ sudo apt update \
 && sudo apt install -y \
     docker \
     docker.io \
+    docker-compose \
     gh \
     git-secret \
     kubectl \
