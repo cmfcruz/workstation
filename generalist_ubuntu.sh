@@ -105,4 +105,7 @@ grep 'export GPG_TTY=$(tty)' ~/.zshrc || echo 'export GPG_TTY=$(tty)' >> ~/.zshr
 # Show current working directory in prompt
 grep 'export PS1="%m %~%# "' ~/.zshrc || echo 'export PS1="%m %~%# "' >> ~/.zshrc
 
+# Do some environment-specific installations
+[[ "$XDG_CURRENT_DESKTOP" =~ "GNOME" ]] && sudo apt install -y gnome-tweaks
+
 echo 'Done.'
