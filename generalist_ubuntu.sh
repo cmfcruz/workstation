@@ -44,6 +44,7 @@ sudo apt install -y \
     tree \
     wget \
     vim \
+    xclip \
     zsh
 
 # Install Pyenv configuration and install Python 3.8.12
@@ -75,12 +76,14 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Install packages using Homebrew
 brew install \
+    awscli \
     balena-cli \
     derailed/k9s/k9s \
     fluxcd/tap/flux \
     gh \
     git-secret \
     kubernetes-cli \
+    kubeseal \
     terraform \
     terragrunt \
     yq
@@ -104,6 +107,9 @@ grep 'export GPG_TTY=$(tty)' ~/.zshrc || echo 'export GPG_TTY=$(tty)' >> ~/.zshr
 
 # Show current working directory in prompt
 grep 'export PS1="%m %~%# "' ~/.zshrc || echo 'export PS1="%m %~%# "' >> ~/.zshrc
+
+# Replicate MacOS pbcopy using xclip
+grep "alias pbcopy='xclip -selection clipboard'" ~/.zshrc || echo "alias pbcopy='xclip -selection clipboard'" >> ~/.zshrc
 
 # Do some environment-specific installations
 [[ "$XDG_CURRENT_DESKTOP" =~ "GNOME" ]] && sudo apt install -y gnome-tweaks
