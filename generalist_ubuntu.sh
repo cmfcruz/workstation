@@ -70,8 +70,7 @@ nvm alias default v16
 
 # Install Homebrew
 test -f /usr/local/bin/brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-grep 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' /home/cmfcruz/.zshrc \
-    || echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/cmfcruz/.zshrc
+grep 'export PATH="/home/linuxbrew/.linuxbrew/bin/:$PATH"' ~/.zshrc || echo 'export PATH="/home/linuxbrew/.linuxbrew/bin/:$PATH"' >> ~/.zshrc 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Install packages using Homebrew
