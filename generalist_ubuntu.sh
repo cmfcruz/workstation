@@ -45,6 +45,7 @@ sudo apt install -y \
     wget \
     vim \
     xclip \
+    tmux \
     zsh
 
 # Install Pyenv configuration and install Python 3.8.12
