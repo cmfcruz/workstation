@@ -8,13 +8,20 @@ switch_to_x11_gnome() {
     [[ "$(id -u)" != "0" ]] && echo "This function should be run as root." && return 1
 
     # For GDM/GNOME
-    # Create a directory for gdm custom configuration
-    mkdir -p /etc/gdm3/custom.conf.d
+    # Update the gdm custom configuration
+    if [ -f /etc/gdm3/custom.conf ]; then
+        # Modify the existing custom configuration if it exists
+        sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/g' /etc/gdm3/custom.conf
+    else
+        # Create a directory for gdm custom configuration
+        mkdir -p /etc/gdm3/custom.conf.d
 
-    # Create the custom configuration file
-    echo -e "[daemon]\nWaylandEnable=false" > /etc/gdm3/custom.conf.d/disable-wayland.conf
+        # Create the custom configuration file
+        echo -e "[daemon]\nWaylandEnable=false" > /etc/gdm3/custom.conf.d/disable-wayland.conf
+    fi	    
 
     echo "Wayland disabled, X11 will be used next time you log in. Please reboot the system for changes to take effect."
+
 }
 
 switch_to_x11_kde() {
