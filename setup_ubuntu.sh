@@ -1,91 +1,98 @@
 #!/usr/bin/env bash
 
-set -e
+set -eo pipefail
 
 sudo apt update
-sudo apt install ca-certificates curl
+sudo apt install -y \
+  ca-certificates \
+  curl
 
 # Add known sources and update repository list
 # CloudFlare
-curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
-# Docker Desktop
+curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg |
+  sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+echo "deb [arch=amd64 \
+  signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] \
+  https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" |
+  sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+
+# Spotify
+curl -sS https://download.spotify.com/debian/pubkey_5384CE82BA52C83A.asc \
+  | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
+echo "deb https://repository.spotify.com stable non-free" \
+  | sudo tee /etc/apt/sources.list.d/spotify.list
+
+# Docker
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" |
   sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
-# Spotify
-curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
-echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
+
 sudo apt update
 
-# Install homebrew prerequisites
+# Install packages
 sudo apt install -y \
   build-essential \
-  procps \
-  file \
-  git \
+  cloudflare-warp \
+  containerd.io \
   curl \
-  gnupg \
-  libssl-dev \
-  software-properties-common
-
-# Install pyenv dependencies
-sudo apt install -y \
-  build-essential \
-  libssl-dev \
-  zlib1g-dev \
-  libbz2-dev \
-  libreadline-dev \
-  libsqlite3-dev \
-  curl \
-  libncursesw5-dev \
-  xz-utils \
-  tk-dev \
-  libxml2-dev \
-  libxmlsec1-dev \
-  libffi-dev \
-  liblzma-dev
-
-# Install Docker Desktop Prerequisites
-sudo apt install -y \
+  docker-buildx-plugin \
   docker-ce \
   docker-ce-cli \
-  containerd.io \
-  docker-buildx-plugin \
-  docker-compose-plugin
-
-# Install packages using apt
-sudo apt install -y \
-  cloudflare-warp \
-  gnome-tweaks \
+  docker-compose-plugin \
+  file \
+  git \
+  gnupg \
   jq \
+  libbz2-dev \
+  libffi-dev \
+  liblzma-dev \
+  libncursesw5-dev \
+  libreadline-dev \
+  libsqlite3-dev \
+  libssl-dev \
+  libxml2-dev \
+  libxmlsec1-dev \
+  net-tools \
+  procps \
+  scdaemon \
   shellcheck \
+  software-properties-common \
   spotify-client \
+  tk-dev \
   tmux \
   tree \
-  wget \
+  unzip \
   vim \
-  xclip
+  wget \
+  xclip \
+  xz-utils \
+  zlib1g-dev
+
+# Install AWS CLI v2
+if ! command -v aws &>/dev/null; then
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+  unzip /tmp/awscliv2.zip -d /tmp/awscliv2
+  sudo /tmp/awscliv2/aws/install
+  rm -rf /tmp/awscliv2.zip /tmp/awscliv2
+fi
 
 # Install Homebrew
-test -f /usr/local/bin/brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+command -v brew &>/dev/null || NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 grep 'export PATH="/home/linuxbrew/.linuxbrew/bin/:$PATH"' ~/.bashrc || echo 'export PATH="/home/linuxbrew/.linuxbrew/bin/:$PATH"' >>~/.bashrc
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Install packages using Homebrew
+brew tap versent/homebrew-taps
 brew install \
   act \
-  awscli \
-  balena-cli \
   derailed/k9s/k9s \
   fluxcd/tap/flux \
   gh \
   git-secret \
-  helm \
   kubernetes-cli \
   kubeseal \
   neovim \
@@ -93,16 +100,26 @@ brew install \
   saml2aws \
   yq
 
+# Install Helm
+if ! command -v helm &>/dev/null; then
+  curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+fi
+
 # Install nvm and install Node v20
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-grep 'export NVM_DIR="$HOME/.nvm"' ~/.bashrc || echo 'export NVM_DIR="$HOME/.nvm"' >>~/.bashrc
-grep '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' ~/.bashrc || echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >>~/.bashrc
+if [ ! -d "$HOME/.nvm" ]; then
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+  grep 'export NVM_DIR="$HOME/.nvm"' ~/.bashrc || echo 'export NVM_DIR="$HOME/.nvm"' >>~/.bashrc
+  grep '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' ~/.bashrc || echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >>~/.bashrc
+fi
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 nvm install v20
 nvm alias default v20
 
-# Install Pyenv and install Python 3.8.12
+# Install balena-cli via npm
+npm install -g balena-cli
+
+# Install Pyenv and install Python 3.8
 export PYTHON_VERSION=3.8
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
@@ -113,6 +130,7 @@ if [ ! -d "${PYENV_ROOT}" ]; then
   echo 'eval "$(pyenv init - bash)"' >>~/.bashrc
   pyenv install $PYTHON_VERSION
 fi
+pyenv global $PYTHON_VERSION
 
 # Install nerdfonts
 NERD_FONTS_DIR=/tmp/nerd-fonts
@@ -121,6 +139,7 @@ if [ ! -d "${NERD_FONTS_DIR}" ]; then
   pushd "${NERD_FONTS_DIR}"
   bash install.sh
   popd
+  rm -rf "${NERD_FONTS_DIR}"
 fi
 
 # Install lazyvim
@@ -132,8 +151,13 @@ fi
 git config --global commit.gpgsign true
 
 # Install Powerline Fonts
-git clone https://github.com/powerline/fonts.git
-cd fonts && ./install.sh && cd .. && rm -rf fonts
+if [ ! -d /tmp/powerline-fonts ]; then
+  git clone https://github.com/powerline/fonts.git /tmp/powerline-fonts
+  pushd /tmp/powerline-fonts
+  bash install.sh
+  popd
+  rm -rf /tmp/powerline-fonts
+fi
 
 # Install GPG configuration
 grep 'export GPG_TTY=$(tty)' ~/.bashrc || echo 'export GPG_TTY=$(tty)' >>~/.bashrc
@@ -145,21 +169,24 @@ grep "alias pbcopy='xclip -selection clipboard'" ~/.bashrc || echo "alias pbcopy
 [[ "$XDG_CURRENT_DESKTOP" =~ "GNOME" ]] && sudo apt install -y gnome-tweaks
 
 # Download and install Google Chrome
-if [ ! -f /tmp/chrome.deb ]; then
+if ! command -v google-chrome &>/dev/null; then
   wget -O /tmp/chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
   sudo apt install -y /tmp/chrome.deb
+  rm -f /tmp/chrome.deb
 fi
 
 # Install VSCode
-if [ ! -f /tmp/vscode.deb ]; then
+if ! command -v code &>/dev/null; then
   wget -O /tmp/vscode.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
   sudo apt install -y /tmp/vscode.deb
+  rm -f /tmp/vscode.deb
 fi
 
 # Install Docker Desktop
-if [ ! -f /tmp/docker-desktop.deb ]; then
-  wget -O /tmp/docker-desktop.deb "https://desktop.docker.com/linux/main/amd64/docker-desktop-amd64.deb?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-linux-amd64&_gl=1*jce70q*_ga*MTA3MTU4MDYyLjE3MzU3OTIyMzg.*_ga_XJWPQMJYHQ*MTczNTc5MjIzOC4xLjEuMTczNTc5MjQ4MC42MC4wLjA."
-  sudo apt install -y /tmp/docker-desktop.deb
+if ! dpkg -l docker-desktop &>/dev/null; then
+  wget -O /tmp/docker-desktop-amd64.deb "https://desktop.docker.com/linux/main/amd64/docker-desktop-amd64.deb"
+  sudo apt install -y /tmp/docker-desktop-amd64.deb
+  rm -f /tmp/docker-desktop-amd64.deb
 fi
 
 echo 'Done.'
