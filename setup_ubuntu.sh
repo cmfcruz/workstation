@@ -168,6 +168,11 @@ grep "alias pbcopy='xclip -selection clipboard'" ~/.bashrc || echo "alias pbcopy
 # Do some environment-specific installations
 [[ "$XDG_CURRENT_DESKTOP" =~ "GNOME" ]] && sudo apt install -y gnome-tweaks
 
+# Install Brave Browser
+if ! command -v brave-browser &>/dev/null; then
+  curl -fsS https://dl.brave.com/install.sh | sh
+fi
+
 # Download and install Google Chrome
 if ! command -v google-chrome &>/dev/null; then
   wget -O /tmp/chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
