@@ -35,7 +35,11 @@ sudo apt update
 
 # Install packages
 sudo apt install -y \
+  augeas-lenses \
+  bind9-dnsutils \
   build-essential \
+  clamav \
+  clamav-daemon \
   cloudflare-warp \
   containerd.io \
   curl \
@@ -51,6 +55,7 @@ sudo apt install -y \
   libffi-dev \
   liblzma-dev \
   libncursesw5-dev \
+  libpam-pwquality \
   libreadline-dev \
   libsqlite3-dev \
   libssl-dev \
@@ -65,12 +70,51 @@ sudo apt install -y \
   tk-dev \
   tmux \
   tree \
+  ufw \
   unzip \
   vim \
   wget \
   xclip \
   xz-utils \
   zlib1g-dev
+
+# Enable firewall
+sudo ufw enable
+
+# Enforce password quality policy in PAM
+sudo sed -i 's/^\(password\s\+requisite\s\+pam_pwquality.so\b.*\)$/password requisite pam_pwquality.so retry=3 minlen=8 minclass=3/' \
+  /etc/pam.d/common-password
+
+# Configure ClamAV for daily updates and scans
+sudo systemctl stop clamav-freshclam
+sudo freshclam
+sudo systemctl enable --now clamav-freshclam
+
+# Weekly scan via systemd timer using clamdscan (uses running daemon, faster than clamscan)
+sudo tee /etc/systemd/system/clamdscan.service >/dev/null <<'EOF'
+[Unit]
+Description=Weekly ClamAV scan
+After=clamav-daemon.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/clamdscan --recursive --infected --log=/var/log/clamav/weekly-scan.log /home
+EOF
+
+sudo tee /etc/systemd/system/clamdscan.timer >/dev/null <<'EOF'
+[Unit]
+Description=Weekly ClamAV scan timer
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now clamdscan.timer
 
 # Install AWS CLI v2
 if ! command -v aws &>/dev/null; then
@@ -120,7 +164,7 @@ nvm alias default v20
 npm install -g balena-cli
 
 # Install Pyenv and install Python 3.8
-export PYTHON_VERSION=3.8
+export PYTHON_VERSION=3.12
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 if [ ! -d "${PYENV_ROOT}" ]; then
@@ -131,6 +175,9 @@ if [ ! -d "${PYENV_ROOT}" ]; then
   pyenv install $PYTHON_VERSION
 fi
 pyenv global $PYTHON_VERSION
+
+# Install pre-commit
+pip3 install pre-commit
 
 # Install nerdfonts
 NERD_FONTS_DIR=/tmp/nerd-fonts
