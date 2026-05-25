@@ -530,6 +530,36 @@ jq \
 
 mv "$vscode_settings_tmp" "$VSCODE_SETTINGS_FILE"
 
+# Configure tmux keybindings and terminal key handling.
+cat <<'EOF' >"$HOME/.tmux.conf"
+# Enable extended-keys to allow shift+enter in Codex
+set -s extended-keys on
+set -as terminal-features ',xterm-ghostty:extkeys'
+set -as terminal-features ',xterm:extkeys'
+
+# Use Vim keys in copy/scroll mode
+setw -g mode-keys vi
+
+# Split panes with easier bindings
+bind | split-window -h
+bind - split-window -v
+
+# Move between panes with Vim keys
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# Resize panes with Vim keys
+bind -r H resize-pane -L 5
+bind -r J resize-pane -D 5
+bind -r K resize-pane -U 5
+bind -r L resize-pane -R 5
+
+# Prompt before killing all tmux sessions
+bind b confirm-before -p "Kill tmux server? (y/n)" kill-server
+EOF
+
 # Yank to clipboard by default in neovim
 mkdir -p "$HOME/.config/nvim"
 cat << EOF > "$HOME/.config/nvim/init.lua"
@@ -539,7 +569,7 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 
 vim.api.nvim_create_autocmd(
-  { "FocusGained", "BufEnter", "CursorHold" },
+  { "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" },
   { command = "checktime" }
 )
 EOF
